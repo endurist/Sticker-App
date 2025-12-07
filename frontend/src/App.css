@@ -1,0 +1,194 @@
+/* Layout */
+.app-container {
+  width: 100%;
+  padding: 0 20px;
+  font-family: 'Courier New', Courier, monospace;
+  text-align: center;
+}
+
+.app-container header {
+  margin: 20px auto;
+  max-width: 600px;
+}
+
+/* Controls */
+.control-panel {
+  margin: 20px auto;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  max-width: 600px;
+}
+
+input {
+  padding: 10px;
+  font-size: 16px;
+  border: 2px solid #333;
+  border-radius: 5px;
+  width: 200px;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background: #ff4757;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+/* Printer Visuals */
+.printer-container {
+  position: relative;
+  width: 300px;
+  margin: 0 auto 50px auto;
+  z-index: 10;
+}
+
+.printer-body {
+  background: #2f3542;
+  height: 60px;
+  border-radius: 10px;
+  position: relative;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2; /* Sits on top of the paper */
+}
+
+.printer-slot {
+  width: 200px;
+  height: 10px;
+  background: #000;
+  border-radius: 5px;
+  position: relative;
+  overflow: hidden;
+}
+
+.printer-lights {
+  margin-top: 10px;
+  text-align: center;
+}
+
+.light {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #666;
+  margin: 0 2px;
+}
+
+.light.ready {
+  background: #28a745;
+  box-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
+}
+
+.light.blink {
+  background: #dc3545;
+  animation: blink 0.5s infinite;
+  box-shadow: 0 0 15px rgba(220, 53, 69, 0.7);
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0.3; }
+}
+
+.paper-exit-zone {
+  position: relative;
+  height: 160px; /* Space for sticker to drop into */
+  margin-top: -10px;
+  z-index: 1; /* Sits behind printer body */
+  display: flex;
+  justify-content: center;
+}
+
+.fresh-sticker {
+  width: 140px;
+  height: auto;
+  filter: drop-shadow(0 5px 5px rgba(0,0,0,0.2));
+  border-radius: 8px;
+}
+
+/* Enhanced printer animation effects */
+.printer-container {
+  position: relative;
+}
+
+.paper-exit-zone {
+  position: relative;
+  overflow: hidden;
+}
+
+.paper-exit-zone::before {
+  content: '';
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 160px;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+  opacity: 0;
+  animation: slideDown 4.5s ease-out forwards;
+  animation-delay: 2s;
+}
+
+@keyframes slideDown {
+  0% {
+    opacity: 0;
+    top: -20px;
+  }
+  10% {
+    opacity: 1;
+    top: -10px;
+  }
+  90% {
+    opacity: 1;
+    top: 80px;
+  }
+  100% {
+    opacity: 0;
+    top: 100px;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+/* Canvas Area */
+.canvas-wrapper {
+  width: calc(100% + 40px); /* Account for parent padding */
+  margin-left: -20px; /* Offset parent padding */
+  margin-right: -20px;
+  background-image: radial-gradient(#ddd 1px, transparent 1px);
+  background-size: 20px 20px; /* Dot grid background */
+  border: 2px dashed #ccc;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: #f8f9fa;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.canvas-wrapper h3 {
+  color: #333;
+  margin: 15px 0;
+  font-size: 1.5em;
+  font-weight: bold;
+}
