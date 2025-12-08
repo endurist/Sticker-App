@@ -22,6 +22,9 @@ function App() {
       console.log("Frontend: Starting generation for city:", city);
       // 1. Call Python Backend
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+      console.log("VITE_API_URL from env:", import.meta.env.VITE_API_URL);
+      console.log("All env vars starting with VITE_:", Object.keys(import.meta.env).filter(key => key.startsWith('VITE_')));
+      console.log("Using API URL:", apiUrl);
       console.log("Frontend: Making axios request to", apiUrl + '/generate');
       const response = await axios.post(apiUrl + '/generate', {
         city: city

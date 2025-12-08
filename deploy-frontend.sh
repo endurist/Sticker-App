@@ -15,6 +15,15 @@ echo "Project: $PROJECT_ID"
 echo "Service: $SERVICE_NAME"
 echo "Region: $REGION"
 
+# Create .env file with API URL for Vite build
+if [ -n "$BACKEND_URL" ]; then
+    echo "Creating .env file with backend URL: $BACKEND_URL"
+    echo "VITE_API_URL=$BACKEND_URL" > frontend/.env
+else
+    echo "No backend URL provided - using localhost fallback"
+    echo "VITE_API_URL=http://localhost:8000" > frontend/.env
+fi
+
 # Build command for frontend
 BUILD_CMD="npm run build"
 if [ -n "$BACKEND_URL" ]; then
