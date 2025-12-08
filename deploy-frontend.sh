@@ -23,18 +23,33 @@ if [ -n "$BACKEND_URL" ]; then
 fi
 
 # Build and deploy
-gcloud run deploy $SERVICE_NAME \
-    --source ./frontend \
-    --platform managed \
-    --region $REGION \
-    --project $PROJECT_ID \
-    --allow-unauthenticated \
-    --port 8080 \
-    --memory 512Mi \
-    --cpu 1 \
-    --max-instances 10 \
-    --set-build-env-vars="NODE_ENV=production" \
-    --set-env-vars="NODE_ENV=production"
+if [ -n "$BACKEND_URL" ]; then
+    gcloud run deploy $SERVICE_NAME \
+        --source ./frontend \
+        --platform managed \
+        --region $REGION \
+        --project $PROJECT_ID \
+        --allow-unauthenticated \
+        --port 8080 \
+        --memory 512Mi \
+        --cpu 1 \
+        --max-instances 10 \
+        --set-build-env-vars="NODE_ENV=production,VITE_API_URL=$BACKEND_URL" \
+        --set-env-vars="NODE_ENV=production"
+else
+    gcloud run deploy $SERVICE_NAME \
+        --source ./frontend \
+        --platform managed \
+        --region $REGION \
+        --project $PROJECT_ID \
+        --allow-unauthenticated \
+        --port 8080 \
+        --memory 512Mi \
+        --cpu 1 \
+        --max-instances 10 \
+        --set-build-env-vars="NODE_ENV=production" \
+        --set-env-vars="NODE_ENV=production"
+fi
 
 # Get the service URL
 SERVICE_URL=$(gcloud run services describe $SERVICE_NAME \
