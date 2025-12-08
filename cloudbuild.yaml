@@ -1,0 +1,74 @@
+# Google Cloud Build configuration for automated deployments
+# Usage: gcloud builds submit --config cloudbuild.yaml
+
+steps:
+  # Build and deploy backend
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/sticker-backend:$COMMIT_SHA'
+      - './backend'
+    id: 'build-backend'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'gcr.io/$PROJECT_ID/sticker-backend:$COMMIT_SHA'
+    id: 'push-backend'
+
+  - name: 'gcr.io/google-appengine/exec-wrapper'
+    args:
+      - '-c'
+      - |
+        gcloud run deploy sticker-backend \
+          --image gcr.io/$PROJECT_ID/sticker-backend:$COMMIT_SHA \
+          --platform managed \
+          --region us-central1 \
+          --allow-unauthenticated \
+          --port 8000 \
+          --memory 1Gi \
+          --cpu 1 \
+          --max-instances 10 \
+          --set-env-vars="GOOGLE_API_KEY=${_GOOGLE_API_KEY},OPENAI_API_KEY=${_OPENAI_API_KEY}"
+    id: 'deploy-backend'
+
+  # Build and deploy frontend
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/sticker-frontend:$COMMIT_SHA'
+      - './frontend'
+    id: 'build-frontend'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'gcr.io/$PROJECT_ID/sticker-frontend:$COMMIT_SHA'
+    id: 'push-frontend'
+
+  - name: 'gcr.io/google-appengine/exec-wrapper'
+    args:
+      - '-c'
+      - |
+        gcloud run deploy sticker-frontend \
+          --image gcr.io/$PROJECT_ID/sticker-frontend:$COMMIT_SHA \
+          --platform managed \
+          --region us-central1 \
+          --allow-unauthenticated \
+          --port 8080 \
+          --memory 512Mi \
+          --cpu 1 \
+          --max-instances 10
+    id: 'deploy-frontend'
+
+# Build substitutions for environment variables
+substitutions:
+  _GOOGLE_API_KEY: ""  # Set in Cloud Build trigger
+  _OPENAI_API_KEY: ""  # Set in Cloud Build trigger
+
+# Options for the build
+options:
+  logging: CLOUD_LOGGING_ONLY
+  machineType: 'E2_HIGHCPU_8'

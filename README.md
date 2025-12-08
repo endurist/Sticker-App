@@ -160,19 +160,78 @@ The app uses a sophisticated multi-step AI pipeline:
 
 ## 🚀 Deployment
 
-### Frontend (Vercel/Netlify)
+### Option 1: Google Cloud Run (Recommended)
+
+Deploy frontend and backend separately to Google Cloud Run:
+
+#### Prerequisites
+1. [Google Cloud SDK](https://cloud.google.com/sdk/docs/install) installed
+2. Google Cloud Project created
+3. APIs enabled: Cloud Run API, Cloud Build API
+4. API keys from Google AI Studio and OpenAI
+
+#### Backend Deployment
+```bash
+# Make script executable
+chmod +x deploy-backend.sh
+
+# Deploy backend
+./deploy-backend.sh your-project-id sticker-backend us-central1
+```
+
+#### Frontend Deployment
+```bash
+# Make script executable
+chmod +x deploy-frontend.sh
+
+# Deploy frontend (after backend is deployed)
+./deploy-frontend.sh your-project-id sticker-frontend us-central1 https://sticker-backend-xxxxxx.run.app
+```
+
+#### Automated Deployment with Cloud Build
+```bash
+# Submit build with environment variables
+gcloud builds submit \
+  --config cloudbuild.yaml \
+  --substitutions _GOOGLE_API_KEY="your-key",_OPENAI_API_KEY="your-key"
+```
+
+### Option 2: Docker Compose (Local Development)
+```bash
+# Create .env file in backend directory
+cp backend/env-example.txt backend/.env
+# Edit backend/.env with your API keys
+
+# Run both services
+docker-compose up --build
+```
+
+### Option 3: Traditional Platforms
+
+#### Frontend (Vercel/Netlify)
 ```bash
 cd frontend
 npm run build
 # Deploy dist/ folder to your hosting platform
 ```
 
-### Backend (Railway/Render/Fly.io)
+#### Backend (Railway/Render/Fly.io)
 ```bash
 cd backend
 # Set environment variables in your hosting platform
 # Deploy main.py as your entry point
 ```
+
+### Environment Variables
+
+Set these environment variables in your deployment platform:
+
+**Backend:**
+- `GOOGLE_API_KEY`: Your Google AI Studio API key
+- `OPENAI_API_KEY`: Your OpenAI API key
+
+**Frontend:**
+- `NODE_ENV`: Set to `production`
 
 ## 🤝 Contributing
 

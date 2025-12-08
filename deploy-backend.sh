@@ -1,0 +1,48 @@
+#!/bin/bash
+
+# Deploy Backend to Google Cloud Run
+# Usage: ./deploy-backend.sh [project-id] [service-name] [region]
+
+set -e
+
+PROJECT_ID=${1:-"your-project-id"}
+SERVICE_NAME=${2:-"sticker-backend"}
+REGION=${3:-"us-central1"}
+
+echo "🚀 Deploying backend to Google Cloud Run..."
+echo "Project: $PROJECT_ID"
+echo "Service: $SERVICE_NAME"
+echo "Region: $REGION"
+
+# Build and deploy
+gcloud run deploy $SERVICE_NAME \
+    --source ./backend \
+    --platform managed \
+    --region $REGION \
+    --project $PROJECT_ID \
+    --allow-unauthenticated \
+    --port 8000 \
+    --memory 1Gi \
+    --cpu 1 \
+    --max-instances 10 \
+    --timeout 300 \
+    --concurrency 80 \
+    --set-env-vars="GOOGLE_API_KEY=YOUR_GOOGLE_API_KEY,OPENAI_API_KEY=YOUR_OPENAI_API_KEY"
+
+# Get the service URL
+SERVICE_URL=$(gcloud run services describe $SERVICE_NAME \
+    --platform managed \
+    --region $REGION \
+    --project $PROJECT_ID \
+    --format "value(status.url)")
+
+echo "✅ Backend deployed successfully!"
+echo "🌐 Service URL: $SERVICE_URL"
+echo ""
+echo "⚠️  IMPORTANT: Update your frontend to use this backend URL:"
+echo "   $SERVICE_URL/generate"
+echo ""
+echo "🔧 To update environment variables later:"
+echo "   gcloud run services update $SERVICE_NAME \\"
+echo "     --set-env-vars='GOOGLE_API_KEY=your_key,OPENAI_API_KEY=your_key' \\"
+echo "     --region $REGION --project $PROJECT_ID"
