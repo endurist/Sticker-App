@@ -4,11 +4,13 @@ FROM node:18-alpine as build
 # Set working directory
 WORKDIR /app
 
+# The .env file will be created by the deploy script
+
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci --only=production
+# Install all dependencies (including dev dependencies for build)
+RUN npm ci
 
 # Copy source code
 COPY . .

@@ -32,20 +32,22 @@ load_dotenv()
 # 1. GOOGLE KEY (The Brain)
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 if not GOOGLE_API_KEY:
-    print("ERROR: GOOGLE_API_KEY environment variable is required")
-    print("Please create a .env file in the backend directory with your API keys.")
-    print("Format: GOOGLE_API_KEY=your_key_here")
-    raise ValueError("GOOGLE_API_KEY environment variable is required")
-genai.configure(api_key=GOOGLE_API_KEY)
+    print("⚠️  WARNING: GOOGLE_API_KEY environment variable is not set")
+    print("The application will start but AI features will not work.")
+    print("Set GOOGLE_API_KEY in your environment variables.")
+    genai.configure(api_key="dummy_key")  # Prevent immediate crash
+else:
+    genai.configure(api_key=GOOGLE_API_KEY)
 
 # 2. OPENAI KEY (The Artist)
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 if not OPENAI_API_KEY:
-    print("ERROR: OPENAI_API_KEY environment variable is required")
-    print("Please create a .env file in the backend directory with your API keys.")
-    print("Format: OPENAI_API_KEY=your_key_here")
-    raise ValueError("OPENAI_API_KEY environment variable is required")
-openai_client = OpenAI(api_key=OPENAI_API_KEY)
+    print("⚠️  WARNING: OPENAI_API_KEY environment variable is not set")
+    print("The application will start but image generation will not work.")
+    print("Set OPENAI_API_KEY in your environment variables.")
+    openai_client = None  # Will be checked in endpoints
+else:
+    openai_client = OpenAI(api_key=OPENAI_API_KEY)
 
 # CITY ASPECTS
 # Used to guide the AI's "lens" for concept generation.
@@ -198,6 +200,13 @@ async def unicode_error_handler(request, exc):
 @app.post("/generate")
 async def generate_sticker(request: PromptRequest):
     print(f"1. User asked for: {request.city}")
+
+    # Check if API keys are configured
+    if not GOOGLE_API_KEY or GOOGLE_API_KEY == "dummy_key":
+        raise Exception("Google API key not configured. Please set GOOGLE_API_KEY environment variable.")
+
+    if not openai_client:
+        raise Exception("OpenAI API key not configured. Please set OPENAI_API_KEY environment variable.")
 
     # Select random aspect
     import random

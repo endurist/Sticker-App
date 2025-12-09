@@ -21,8 +21,9 @@ function App() {
     try {
       console.log("Frontend: Starting generation for city:", city);
       // 1. Call Python Backend
-      console.log("Frontend: Making axios request to http://localhost:8000/generate");
-      const response = await axios.post('http://localhost:8000/generate', {
+      const apiUrl = 'https://sticker-backend-255707635938.us-central1.run.app';
+      console.log("Frontend: Making axios request to", apiUrl + '/generate');
+      const response = await axios.post(apiUrl + '/generate', {
         city: city
       });
       console.log("Frontend: Axios request completed successfully");
